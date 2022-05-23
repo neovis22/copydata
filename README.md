@@ -101,6 +101,8 @@ copydata.setVar(options.hwnd, "hwnd", a_scriptHwnd)
 - `setVar(hwnd, var, value)`
 - `getVar(hwnd, var)`
 - `onReceive(callback, addRemove=1)`
+    - `callback(hSender, type, data)`
+        - `type` `"Buffer" | "String" | "Object"`
 
 ## Properties
 - `timeout` `call`, `gosub` 호출시 기다리는 시간(초), `0`은 무제한
