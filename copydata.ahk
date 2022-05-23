@@ -92,7 +92,7 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                     method := chain.pop()
                     for i, prop in chain
                         instance := instance[prop]
-                    func := ObjBindMethod(instance, method, args*)
+                    func := ObjBindMethod(instance, method, data.args*)
                 } else {
                     func := Func(data.func).bind(data.args*)
                 }
