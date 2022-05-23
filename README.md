@@ -51,6 +51,8 @@ onCopyData(hwnd, type, data) {
 
 #### 함수 호출
 ```ahk
+copydata.timeout := 0 ; 무제한 대기
+
 ; 함수가 호출되고 결과값이 반환될때까지 기다립니다
 res := copydata.call(hwnd, "DllCall", "MessageBox"
     , "ptr",0, "str","Yes or No", "str","~에서 보냄", "uint",0x4) ; MB_YESNO
@@ -80,12 +82,12 @@ for i, v in a_args {
     if (SubStr(v, 1, 1) == "/")
         key := SubStr(v, 2)
     else if (key)
-        options[key] := v
+        options[key] := v, key := ""
 }
 if (!options.hwnd)
     exitapp
-MsgBox % "A hwnd: " options.hwnd
 copydata.setVar(options.hwnd, "hwnd", a_scriptHwnd)
+MsgBox % "A hwnd: " options.hwnd
 ```
 대상 프로그램을 실행시 커맨드라인으로 `a_scriptHwnd` 전달후 응답을 기다린 후 실행된 프로세스의 핸들값을 받아 각각 상대 프로세스의 핸들을 받는 과정입니다.
 
@@ -102,7 +104,7 @@ copydata.setVar(options.hwnd, "hwnd", a_scriptHwnd)
 - `getVar(hwnd, var)`
 - `onReceive(callback, addRemove=1)`
     - `callback(hSender, type, data)`
-        - `type` `"Buffer" | "String" | "Object"`
+        - `type` `"Buffer"` | `"String"` | `"Object"`
 
 ## Properties
 - `timeout` `call`, `gosub` 호출시 기다리는 시간(초), `0`은 무제한
