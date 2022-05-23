@@ -84,7 +84,18 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                 data := json_parse(StrGet(ptr))
             case copydata.TYPE_CALLFUNCTION:
                 data := json_parse(StrGet(ptr))
-                func := Func(data.func).bind(data.args*)
+                if (InStr(data.func, ".")) {
+                    chain := StrSplit(data.func, ".")
+                    global (instance)
+                    instance := chain.removeAt(1)
+                    instance := %instance%
+                    method := chain.pop()
+                    for i, prop in chain
+                        instance := instance[prop]
+                    func := ObjBindMethod(instance, method, args*)
+                } else {
+                    func := Func(data.func).bind(data.args*)
+                }
                 if (data.sessId)
                     func := Func("_copydata_callback").bind(wparam, data.sessId, func)
                 SetTimer % func, -1
