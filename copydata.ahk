@@ -1,7 +1,7 @@
 /*
     Library: copydata
     Author: neovis
-    Link: https://github.com/neovis22/copydata
+    https://github.com/neovis22/copydata
 */
 
 class copydata {
