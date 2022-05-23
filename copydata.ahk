@@ -84,15 +84,6 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                 data := json_parse(StrGet(ptr))
             case copydata.TYPE_CALLFUNCTION:
                 data := json_parse(StrGet(ptr))
-                
-                if (InStr(data.func, ".")) {
-                    path := StrSplit(data.func, ".")
-                    path.removeAt(1)
-                    method := path.pop()
-                    for i, prop in path
-                        instance := instance[prop]
-                }
-                
                 func := Func(data.func).bind(data.args*)
                 if (data.sessId)
                     func := Func("_copydata_callback").bind(wparam, data.sessId, func)
