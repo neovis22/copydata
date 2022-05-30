@@ -1,20 +1,32 @@
 # Copydata Class
 WM_COPYDATA 메시지를 이용한 프로세스간 데이터 전달 라이브러리
 
-## Requirements
-- [Autohotkey v1.1.31+](https://www.autohotkey.com)
-- [json 라이브러리](https://github.com/neovis22/json)
-
 ## Installation
+
+#### 필수 라이브러리
+- [json](https://github.com/neovis22/json)
+
+> 아래 방법으로 설치시 함께 설치됩니다.
+
+### 오토핫키 스크립트로 설치하는 방법
 아래 두가지 방법중 하나를 선택하여 설치하세요. 먼저 [git](https://git-scm.com/download/win)이 설치되어 있어야 합니다.
 
-오토핫키 스크립트로 설치하는 방법:
+#### 표준 라이브러리에 설치
 ```ahk
-; 표준 라이브러리에 설치
-RunWait git clone https://github.com/neovis22/copydata.git, % a_ahkPath "\..\Lib"
+RunWait % comspec " /c " "
+(join& ltrim
+    git clone https://github.com/neovis22/copydata.git
+    git clone https://github.com/neovis22/json.git
+)", % a_ahkPath "\..\Lib"
+```
 
-; 로컬 라이브러리에 설치
-RunWait git clone https://github.com/neovis22/copydata.git Lib/copydata
+#### 로컬 라이브러리에 설치
+```ahk
+RunWait % comspec " /c " "
+(join& ltrim
+    git clone https://github.com/neovis22/copydata.git Lib/copydata
+    git clone https://github.com/neovis22/json.git Lib/json
+)"
 ```
 
 사용할 스크립트에 아래 코드를 추가하세요.
