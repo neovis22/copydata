@@ -95,8 +95,9 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                     func := Func(data.func).bind(data.args*)
                 }
                 if (data.sessId)
-                    func := Func("_copydata_callback").bind(wparam, data.sessId, func)
-                SetTimer % func, -1
+                    _copydata_postCall(wparam, "_copydata_response", data.sessId, func.call())
+                else
+                    func.call()
                 return true
             default:
                 return false
@@ -136,13 +137,8 @@ _copydata_call(hwnd, func, args*) {
 }
 
 _copydata_postCall(hwnd, func, args*) {
-    data := json_stringify({func:func, args:args, async:async})
+    data := json_stringify({func:func, args:args})
     return _copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION)
-}
-
-; 요청 프로세스로 반환값 전송
-_copydata_callback(hwnd, sessId, func) {
-    _copydata_postCall(hwnd, "_copydata_response", sessId, func.call())
 }
 
 ; 응답온 데이터를 저장
