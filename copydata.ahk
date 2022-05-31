@@ -86,7 +86,8 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                 data := json_parse(StrGet(ptr))
                 if (InStr(data.func, ".")) {
                     chain := StrSplit(data.func, ".")
-                    instance := _copydata_getGlobalVar(chain.removeAt(1))
+                    instance := chain.removeAt(1)
+                    instance := %instance%
                     method := chain.pop()
                     for i, prop in chain
                         instance := instance[prop]
@@ -150,36 +151,28 @@ _copydata_response(sessId, res) {
 _copydata_getVar(var) {
     if (InStr(var, ".")) {
         chain := StrSplit(var, ".")
-        instance := _copydata_getGlobalVar(chain.removeAt(1))
+        instance := chain.removeAt(1)
+        instance := %instance%
         for i, v in chain
             instance := instance[v]
         return instance
     } else {
-        return _copydata_getGlobalVar(var)
+        return (%var%)
     }
 }
 
 _copydata_setVar(var, value) {
     if (InStr(var, ".")) {
         chain := StrSplit(var, ".")
-        instance := _copydata_getGlobalVar(chain.removeAt(1))
+        instance := chain.removeAt(1)
+        instance := %instance%
         prop := chain.pop()
         for i, v in chain
             instance := instance[v]
         instance[prop] := value
     } else {
-        _copydata_setGlobalVar(var, value)
+        %var% := value
     }
-}
-
-_copydata_getGlobalVar(var) {
-    global
-    return (%var%)
-}
-
-_copydata_setGlobalVar(var, byref value) {
-    global
-    %var% := value
 }
 
 _copydata_gosub(label) {
