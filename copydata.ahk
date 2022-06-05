@@ -85,13 +85,10 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
             case copydata.TYPE_CALLFUNCTION:
                 data := json_parse(StrGet(ptr))
                 if (InStr(data.func, ".")) {
-                    chain := StrSplit(data.func, ".")
-                    instance := chain.removeAt(1)
-                    instance := %instance%
-                    method := chain.pop()
-                    for i, prop in chain
-                        instance := instance[prop]
-                    func := ObjBindMethod(instance, method, data.args*)
+                    parts := StrSplit(data.func, ".")
+                    ref := parts.removeAt(1)
+                    method := parts.pop()
+                    func := ObjBindMethod(parts.length() ? %ref%[parts*] : %ref%, method, data.args*)
                 } else {
                     func := Func(data.func).bind(data.args*)
                 }
@@ -150,12 +147,9 @@ _copydata_response(sessId, res) {
 
 _copydata_getVar(var) {
     if (InStr(var, ".")) {
-        chain := StrSplit(var, ".")
-        instance := chain.removeAt(1)
-        instance := %instance%
-        for i, v in chain
-            instance := instance[v]
-        return instance
+        parts := StrSplit(var, ".")
+        ref := parts.removeAt(1)
+        return %ref%[parts*]
     } else {
         return (%var%)
     }
@@ -163,13 +157,9 @@ _copydata_getVar(var) {
 
 _copydata_setVar(var, value) {
     if (InStr(var, ".")) {
-        chain := StrSplit(var, ".")
-        instance := chain.removeAt(1)
-        instance := %instance%
-        prop := chain.pop()
-        for i, v in chain
-            instance := instance[v]
-        instance[prop] := value
+        parts := StrSplit(var, ".")
+        ref := parts.removeAt(1)
+        %ref%[parts*] := value
     } else {
         %var% := value
     }
