@@ -106,20 +106,20 @@ MsgBox % "A hwnd: " options.hwnd
 커맨드라인을 확인하여 스스로를 복제한 프로그램을 실행하는 응용도 가능합니다.
 
 ## Methods
-- `send(hwnd, value)` 문자열 혹은 객체 전송
-- `send(hwnd, ptr, length)` 버퍼 전송
-- `call(hwnd, func, args*)` 함수를 호출하며 리턴값 대기
-- `postCall(hwnd, func, args*)` 대기하지 않고 함수를 호출
-- `goto(hwnd, label)` 레이블을 호출하며 현재 쓰래드를 정지
-- `gosub(hwnd, label)` 레이블 호출
-- `setVar(hwnd, var, value)`
-- `getVar(hwnd, var)`
-- `onReceive(callback, addRemove=1)`
+- `copydata.send(hwnd, value)` 문자열 혹은 객체 전송
+- `copydata.send(hwnd, ptr, length)` 버퍼 전송
+- `copydata.call(hwnd, func, args*)` 함수를 호출하며 리턴값 대기
+- `copydata.postCall(hwnd, func, args*)` 대기하지 않고 함수를 호출
+- `copydata.goto(hwnd, label)` 레이블을 호출하며 현재 쓰래드를 정지
+- `copydata.gosub(hwnd, label)` 레이블 호출
+- `copydata.setVar(hwnd, var, value)`
+- `copydata.getVar(hwnd, var)`
+- `copydata.onReceive(callback, addRemove=1)`
     - `callback(hSender, type, data)`
         - `type` `"Buffer"` | `"String"` | `"Object"`
 
 ## Properties
-- `timeout` `call`, `gosub` 호출시 기다리는 시간(초), `0`은 무제한
+- `copydata.timeout` `call`, `gosub` 호출시 기다리는 시간(초), `0`은 무제한
 
 ## Contact
 [카카오톡 오픈 프로필](https://open.kakao.com/me/neovis)
