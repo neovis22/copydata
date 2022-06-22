@@ -21,7 +21,7 @@ class copydata {
     send(hwnd, value, length="") {
         if (length == "") {
             if (IsObject(value))
-                value := json_stringify(value), type := copydata.TYPE_OBJECT
+                value := copydata.ason.stringify(value), type := copydata.TYPE_OBJECT
             else
                 type := copydata.TYPE_STRING
             return _copydata_send(hwnd, value, (StrLen(value)+1)*2, type)
@@ -67,6 +67,8 @@ class copydata {
             default: throw Exception("invalid parameter value for addRemove: " addRemove)
         }
     }
+    
+    #Include %a_lineFile%\..\ason.ahk
 }
 
 _copydata_receive(wparam, lparam, msg, hwnd) {
@@ -81,9 +83,9 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                 data := StrGet(ptr)
             case copydata.TYPE_OBJECT:
                 type := "Object"
-                data := json_parse(StrGet(ptr))
+                data := copydata.ason.parse(StrGet(ptr))
             case copydata.TYPE_CALLFUNCTION:
-                data := json_parse(StrGet(ptr))
+                data := copydata.ason.parse(StrGet(ptr))
                 if (InStr(data.func, ".")) {
                     parts := StrSplit(data.func, ".")
                     ref := parts.removeAt(1)
@@ -119,7 +121,7 @@ _copydata_send(hwnd, ptr, length, type) {
 _copydata_call(hwnd, func, args*) {
     ; 세션 객체를 생성하고 객체의 포인터를 전달하여 응답 상태를 확인
     sess := {wait:1}, copydata._sessions[p := &sess] := sess
-    data := json_stringify({func:func, args:args, sessId:p})
+    data := copydata.ason.stringify({func:func, args:args, sessId:p})
     if (!_copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION))
         return
     t := a_tickCount+copydata.timeout*1000
@@ -135,7 +137,7 @@ _copydata_call(hwnd, func, args*) {
 }
 
 _copydata_postCall(hwnd, func, args*) {
-    data := json_stringify({func:func, args:args})
+    data := copydata.ason.stringify({func:func, args:args})
     return _copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION)
 }
 
@@ -168,5 +170,3 @@ _copydata_setVar(var, value) {
 _copydata_gosub(label) {
     gosub % label
 }
-
-#Include <json\json>
