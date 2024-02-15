@@ -24,7 +24,7 @@ class copydata {
                 value := copydata.ason.stringify(value), type := copydata.TYPE_OBJECT
             else
                 type := copydata.TYPE_STRING
-            return _copydata_send(hwnd, value, (StrLen(value)+1)*2, type)
+            return _copydata_send(hwnd, &value, (StrLen(value)+1)*2, type)
         }
         return _copydata_send(hwnd, IsByRef(value) ? &value : value, length, copydata.TYPE_BUFFER)
     }
