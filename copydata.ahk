@@ -16,7 +16,7 @@ class copydata {
     static TYPE_CALLFUNCTION := 0xF00004
     
     ; `call`, `gosub` 호출시 대기하는 시간(초)
-    static timeout := 3
+    static timeout := 5
     
     send(hwnd, value, length="") {
         if (length == "") {
@@ -95,9 +95,8 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
                     func := Func(data.func).bind(data.args*)
                 }
                 if (data.sessId)
-                    _copydata_postCall(wparam, "_copydata_response", data.sessId, func.call())
-                else
-                    func.call()
+                    func := Func("_copydata_callbackResponse").bind(wparam, data.sessId, func)
+                SetTimer % func, -10
                 return true
             default:
                 return false
@@ -106,10 +105,14 @@ _copydata_receive(wparam, lparam, msg, hwnd) {
         for i, v in copydata._handlers
             if ((res := v.call(wparam, type, data)) != "")
                 return res
-    } catch {
+    } catch error {
         return false
     }
     return true
+}
+
+_copydata_callbackResponse(hwnd, sessId, fn) {
+    _copydata_postCall(hwnd, "_copydata_response", sessId, fn.call())
 }
 
 _copydata_send(hwnd, ptr, length, type) {
@@ -122,8 +125,13 @@ _copydata_call(hwnd, func, args*) {
     ; 세션 객체를 생성하고 객체의 포인터를 전달하여 응답 상태를 확인
     sess := {wait:1}, copydata._sessions[p := &sess] := sess
     data := copydata.ason.stringify({func:func, args:args, sessId:p})
-    if (!_copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION))
-        return
+    while (_copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION) == 0) {
+        if (!DllCall("GetWindow", "ptr",hwnd, "uint",0, "ptr")) {
+            console.error("window not found")
+            return
+        }
+        Sleep 10
+    }
     t := a_tickCount+copydata.timeout*1000
     while (sess.wait) {
         if (copydata.timeout != 0 && a_tickCount > t) {
@@ -138,7 +146,14 @@ _copydata_call(hwnd, func, args*) {
 
 _copydata_postCall(hwnd, func, args*) {
     data := copydata.ason.stringify({func:func, args:args})
-    return _copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION)
+    while (_copydata_send(hwnd, &data, (StrLen(data)+1)*2, copydata.TYPE_CALLFUNCTION) == 0) {
+        if (!DllCall("GetWindow", "ptr",hwnd, "uint",0, "ptr")) {
+            console.error("window not found")
+            return
+        }
+        Sleep 10
+    }
+    return true
 }
 
 ; 응답온 데이터를 저장
@@ -165,6 +180,7 @@ _copydata_setVar(var, value) {
     } else {
         %var% := value
     }
+    return true
 }
 
 _copydata_gosub(label) {
