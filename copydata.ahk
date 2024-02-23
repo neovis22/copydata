@@ -1,4 +1,4 @@
-/*
+﻿/*
     Library: copydata
     Author: neovis
     https://github.com/neovis22/copydata
